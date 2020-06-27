@@ -18,8 +18,10 @@ function activate(context) {
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('languagehelper.start', function () {
-		// The code you place here will be executed every time your command is executed
-
+		
+		supportedLanguages = ['Python'];
+		userLanguage = vscode.window.createQuickPick(supportedLanguages);
+		console.log(userLanguage);
 		// Display a message box to the user
 		vscode.window.showInformationMessage('LanguageHelper');
 	});
