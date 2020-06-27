@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const path = require('path');
-const { isOptionalChain } = require('typescript');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -23,7 +22,7 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('languagehelper.start',
 		() => {
 
-        supportedLanguages = ['Python', 'C', 'JavaScript'];
+        const supportedLanguages = ['Python', 'C', 'JavaScript'];
 
         const panel = vscode.window.createWebviewPanel(
             'lngHelper',
@@ -42,6 +41,9 @@ function activate(context) {
 		
 		// Set panel's html to local file
 		panel.webview.html = getWebviewContent(welcomeSrc);
+		
+		//selecting a language
+		selectLanguage(supportedLanguages);
 
         // Display a message box to the user
         vscode.window.showInformationMessage('LanguageHelper');
@@ -60,11 +62,10 @@ function selectLanguage(supportedLanguages) {
 	}
 
 	//redirect to challenge
-	document.getElementById('go').addEventListener('click', () => {
+	// document.getElementById('go').addEventListener('click', () => {
 
-	});
+	// });
 }
-
 
 exports.activate = activate;
 
