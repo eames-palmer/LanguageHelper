@@ -1,44 +1,32 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-//const path = require('path');
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "LanguageHelper" is now active!');
 
+    let disposable = vscode.commands.registerCommand('languagehelper.start',
+        () => {
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('languagehelper.start',
-		() => {
+            const panel = vscode.window.createWebviewPanel(
+                'lngHelper',
+                'Language Helper',
+                vscode.ViewColumn.One, {
+                    enableScripts: true
+                }
+            );
 
-        const panel = vscode.window.createWebviewPanel(
-            'lngHelper',
-            'Language Helper',
-			vscode.ViewColumn.One, 
-			{
-				enableScripts: true
-			}
-		);
-	  
-
-		panel.webview.html = `<!DOCTYPE html> 
+            panel.webview.html = `<!DOCTYPE html> 
 		<html>
 			<head>
 				<title>LanguageHelper</title>
 				<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 			<style>
-				div {
+				.column div {
 					background-color: lightblue;
 					padding: 10px;
 					border-radius: 5px;
@@ -49,63 +37,90 @@ function activate(context) {
 					transition: opacity .2s;
 				}
 
-				div:hover {
+				.column div:hover {
 					opacity: 0.8;
 					cursor: pointer;
+				}
+				
+				.column {
+					display: flex;
+					flex-direction: column;
+				}
+				.row {
+					display: flex;
+					flex-direction: row;
 				}
 			</style>
 			</head>
 			<body>
 				<h1>Welcome!</h1>
-				<h2>Select a language</h2>
-					
-				<div id="python">Python</div>
-				<div id="java">Java</div>
-				<div id="javascript">JavaScript</div>
-				<div id="c">C</div>
-
+				<h2>Select a language and topic</h2>
+				
+	
+			<div class="row">
+					<select id="lang">
+						<option value="python">Python</option>
+						<option value="javascript">JavaScript</option>
+						<option value="java">Java</option>
+						<option value="c">C</option>
+					</select>
+					<select id="topic">
+						<option value="print">Print Statements</option>
+						<option value="if">If Statements</option>
+						<option value="vars">Variables</option>
+						<option value="loops">Loops</option>
+						<option value="functions">Functions</option>
+						<option value="recursion">Recursions</option>
+					</select>
+					<button id="go">Go</button>
+				</div>
 				<script>
 					(function() {
 						const vscode = acquireVsCodeApi();
-						//vscode.postMessage({command: 'test',text: 'test'});
-						$("div").on("click", function() {
-							let choice = this.id;
+
+						document.getElementById('go').addEventListener('click',
+							() => {
+							let topic = document.getElementById('topic').value;
+							let language = document.getElementById('lang').value;
 							vscode.postMessage({
-								text: choice
+								lang: language,
+								topic: topic
 							});
 						});
 					}())
 				</script>
 			</body>
 		</html>`;
-		
-		panel.webview.onDidReceiveMessage(message => {
-			console.log(message.text);
-			vscode.window.showInformationMessage("You chose " + message.text);
-			redirect(message.text);
-		});
-		
-		function redirect(lang) {
-			switch(lang) {
-				case 'python':
-					
-					break;
-				case 'java':
 
-					break;
-				case 'javascript':
-					
-					break;
-				case 'c':
-					
-					break;
-				default:
-					vscode.window.showErrorMessage("Something went wrong!");
-					break;
-			}
-		}
-	});
-	
+            panel.webview.onDidReceiveMessage(message => {
+                console.log(message.topic);
+                console.log(message.lang);
+                vscode.window.showInformationMessage("You chose " +
+                    message.lang + " " + message.topic);
+                redirect(message);
+            });
+
+            function redirect(choices) {
+                switch (choices.lang) {
+                    case 'python':
+
+                        break;
+                    case 'java':
+
+                        break;
+                    case 'javascript':
+
+                        break;
+                    case 'c':
+
+                        break;
+                    default:
+                        vscode.window.showErrorMessage("Something went wrong!");
+                        break;
+                }
+            }
+        });
+
     context.subscriptions.push(disposable);
 }
 
