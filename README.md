@@ -1,6 +1,6 @@
 # VsCode Hackathon
 
-## LanguageHelper Extention
+## LanguageHelper Extension
 
 _Gamifying the learning experience._
 
