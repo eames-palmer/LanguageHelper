@@ -30,4 +30,3 @@ print(f"{segment1} Its a nice day today!")
 #Lets Concatenate some strings, your name and your favorite Fruit:
 
 #Finally Lets try a formatted string, your name and your favorite Fruit:
-
