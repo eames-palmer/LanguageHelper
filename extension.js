@@ -6,12 +6,10 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
-    console.log('Congratulations, your extension "LanguageHelper" is now active!');
+    console.log('"LanguageHelper" is now active!');
 
     let disposable = vscode.commands.registerCommand('languagehelper.start',
         () => {
-
             const panel = vscode.window.createWebviewPanel(
                 'lngHelper',
                 'Language Helper',
@@ -20,11 +18,11 @@ function activate(context) {
                 }
             );
 
+            //html for main page
             panel.webview.html = `<!DOCTYPE html> 
 		<html>
 			<head>
 				<title>LanguageHelper</title>
-				<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 			<style>
 				.column div {
 					background-color: lightblue;
@@ -56,7 +54,6 @@ function activate(context) {
 				<h1>Welcome!</h1>
 				<h2>Select a language and topic</h2>
 				
-	
 			<div class="row">
 					<select id="lang">
 						<option value="python">Python</option>
@@ -92,41 +89,291 @@ function activate(context) {
 			</body>
 		</html>`;
 
+            // Recieves message and redirects
             panel.webview.onDidReceiveMessage(message => {
-                console.log(message.topic);
-                console.log(message.lang);
-                vscode.window.showInformationMessage("You chose " +
-                    message.lang + " " + message.topic);
-                redirect(message);
+				if (message.lang && message.topic) {
+					console.log(message.topic);
+					console.log(message.lang);
+                	vscode.window.showInformationMessage("You chose " +
+						message.lang + " " + message.topic);
+				}
+                redirect(message, panel);
             });
-
-            function redirect(choices) {
-                switch (choices.lang) {
-                    case 'python':
-
-                        break;
-                    case 'java':
-
-                        break;
-                    case 'javascript':
-
-                        break;
-                    case 'c':
-
-                        break;
-                    default:
-                        vscode.window.showErrorMessage("Something went wrong!");
-                        break;
-                }
-            }
         });
 
     context.subscriptions.push(disposable);
 }
 
+/**
+ * Redirects the output of the message to create the correct file.
+ * 
+ * @param choices: contains the language and topic the user selected.
+ * @param panel: the panel to be redirected to the new page.
+ */
+function redirect(choices, panel) {
+	if (choices.done) {
+		pythonPrintGame();
+		return;
+	}
+	if (choices.errVal) {
+		vscode.window.showInformationMessage("You found an error! ");
+		return;
+	}
+    switch (choices.lang) {
+        case 'python':
+			switch(choices.topic){	
+				case 'print':
+					panel.webview.html = `
+					<!DOCTYPE html>
+					<html>
+					<head>
+						<title>Python Print Statements</title>
+						<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+						<style>
+							body {
+								padding: 0px;
+								margin: 0px;
+								cursor: pointer;
+							}
+							code {
+								border: 1px solid darkgray;
+								display: block;
+								padding: 10px;
+								border-radius: 5px; 
+								word-wrap: break-word;
+								color: #5ab038;
+								margin-left: 2.5vw;
+								margin-right: 2.5vw;
+								margin-top: 1vh;
+							}
+						</style>
+					</head>
+					<body>
+					<pre>
+					<code>
+#Print statements are the greatest tool a developer has in their toolbox. Allowing for Testing and Debbuging in quick and efficient manner.
+
+#This is how print statements can be handled in <chosenLanguage>.
+
+print("Hello World!")
+
+#You can also Concatenate objects/ put them together
+
+print("Hello World!" + " Its a nice day today!")
+
+#These can be variables, we'll come to variables later.
+
+segment1 = "Hello World!"
+segment2 = " Its a nice day today!"
+
+print("Hello World!" + segment2)
+print(segment1 + segment2)
+
+#You can also print formatted Strings
+
+segment1 = "Hello World!"
+print(f"{segment1} Its a nice day today!")
+
+#These can become very powerful tools to allow you to debug and test your code. These are just some of the ways print functions can be performed, but with this knowledge you are ready to get started.
+
+#So lets try it out now. First can you catch our mistake.
+
+print(<span class="error">"</span><span class="error">Hello World</span><span class="error">'</span>)
+
+print(<span class="error">"helloworld"</span><span class="error"> </span>segment1)
+
+<button class="done">Done</button>
+					</code>
+					</pre>
+					<script>
+					(function() {
+						const vscode = acquireVsCodeApi();
+						
+						$(".done").on("click", function() {
+							vscode.postMessage({
+								done: 'done'
+							});
+						});
+
+						$(".error").on("click", function() {
+							vscode.postMessage({
+								errVal: 'correct'
+							});
+						});
+
+					}())
+					</script>
+					</body>
+					</html>
+					`;
+					break;
+				case 'if':
+					panel.webview.html = `
+					<!DOCTYPE html>
+					<html>
+					<head>
+						<title>Python Print Statements</title>
+						<style>
+							body {
+								padding: 0px;
+								margin: 0px;
+								cursor: pointer;
+							}
+							code {
+								border: 1px solid darkgray;
+								display: block;
+								padding: 10px;
+								border-radius: 5px; 
+								word-wrap: break-word;
+								margin-left: 2.5vw;
+								margin-right: 2.5vw;
+								margin-top: 1vh;
+							}
+						</style>
+					</head>
+					<body>
+					<pre>
+					<code>
+animal = ["cats"]
+animals = ["dogs", "cats", "bunny"]
+
+if animal in animals:
+	print(animal)
+
+a = 10
+b = 9
+c = 5
+d = 5
+
+if a > b:
+	print("a is greater than b")
+elif a < b:
+	print("b is greater than a")
+else: 
+	print("They are equal")
+
+if a == b and c == d:
+	print("a and b are equal. c and d are also equal")
+
+if a == b or c == d:
+	print("a and b are equal or c and d are equal")
+					</code>
+					</pre>
+					</body>
+					</html>
+					`;
+					break;
+				case 'vars':
+					break;
+				case 'loops':
+					break;
+				case 'functions':
+					break;
+				case 'recursion':
+					break;
+				default:
+					break;
+			}
+            break;
+        case 'java':
+            //TODO: Add java coding lessons.
+            break;
+        case 'javascript':
+            //TODO: Add js coding lessons.
+            break;
+        case 'c':
+            //TODO: Add C coding lessons.
+            break;
+        default:
+            vscode.window.showErrorMessage("Something went wrong!");
+            break;
+    }
+}
+
+function pythonPrintGame(){
+	const panel = vscode.window.createWebviewPanel(
+		'lngHelper',
+		'Python Print Game',
+		vscode.ViewColumn.One, {
+			enableScripts: true
+		}
+	);
+
+	panel.webview.html = `
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Python Print Game</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<style>
+			#question2 {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+	<pre>
+	<code>
+	
+<span id="question1">Write some code to print out your Name:</span>
+
+<span id="question2">Good Job! Now lets Concatenate some strings, your name and your favorite Fruit:</span>
+
+<textarea id="userAttempt" rows="4" cols="50"></textarea>
+<button class="submit">Submit</button>
+
+
+	</code>
+	</pre>
+	<script>
+	(function() {
+		const vscode = acquireVsCodeApi();
+		
+		var question = 1.0;
+		
+		const reg1 = /print\([\"\'].*[\"\']\)/i;
+		const reg2 = /print\([\"\'][A-z]+[\"\'] \+ [\"\'][A-z]+[\"\']\)/;
+		
+		$(".submit").on("click", function() {
+			let input = $("#userAttempt").val();
+			if (question == 1.0 &&input.match(reg1)) {
+				$("#question1").css({display:"none"});
+				$("#question2").css({display:"block"});
+				question = (question + 1) * 1.0;
+			} else if (question == 2.0 && reg2.test(input)) {
+				vscode.postMessage({
+				 	success: 'pass'
+				});
+			} else {
+				vscode.postMessage({
+					success: 'fail',
+					userAns: input
+				});
+			}
+		});
+	}())
+	</script>
+	</body>
+	</html>
+	`;
+
+	panel.webview.onDidReceiveMessage(message => {
+		if(message.success === 'pass'){
+			vscode.window.showInformationMessage("Good Job You Figured it Out.");
+			choices.topic = "if"
+			redirect(choices, pa)
+		} else {
+			vscode.window.showInformationMessage(message.userAns);
+			vscode.window.showInformationMessage("Close, Try Again.");
+		}
+	});
+}
+
 exports.activate = activate;
 
-// This method is called when your extension is deactivated
+/**
+ * This method is called when your extension is deactivated
+ */
 function deactivate() {}
 
 module.exports = {
