@@ -94,8 +94,8 @@ function activate(context) {
 				if (message.lang && message.topic) {
 					console.log(message.topic);
 					console.log(message.lang);
-                	vscode.window.showInformationMessage("You chose " +
-						message.lang + " " + message.topic);
+                	//vscode.window.showInformationMessage("You chose " +
+						//message.lang + " " + message.topic);
 				}
                 redirect(message, panel);
             });
@@ -141,7 +141,6 @@ function redirect(choices, panel) {
 								padding: 10px;
 								border-radius: 5px; 
 								word-wrap: break-word;
-								color: #5ab038;
 								margin-left: 2.5vw;
 								margin-right: 2.5vw;
 								margin-top: 1vh;
@@ -306,7 +305,7 @@ function pythonPrintGame(){
 		<title>Python Print Game</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<style>
-			#question2 {
+			#question2, .button2 {
 				display: none;
 			}
 		</style>
@@ -320,7 +319,8 @@ function pythonPrintGame(){
 <span id="question2">Good Job! Now lets Concatenate some strings, your name and your favorite Fruit:</span>
 
 <textarea id="userAttempt" rows="4" cols="50"></textarea>
-<button class="submit">Submit</button>
+<button class="button1">Submit</button>
+<button class="button2">Submit</button>
 
 
 	</code>
@@ -331,18 +331,29 @@ function pythonPrintGame(){
 		
 		var question = 1.0;
 		
-		const reg1 = /print\([\"\'].*[\"\']\)/i;
-		const reg2 = /print\([\"\'][A-z]+[\"\'] \+ [\"\'][A-z]+[\"\']\)/;
+		// const reg1 = /print\([\"\'].*[\"\']\)/i;
+		// const reg2 = /print\([\"\'][A-z]+[\"\'] \+ [\"\'][A-z]+[\"\']\)/;
 		
-		$(".submit").on("click", function() {
+		$(".button1").on("click", function() {
 			let input = $("#userAttempt").val();
-			if (question == 1.0 &&input.match(reg1)) {
+			if (input.includes("print(") && input.includes(")")) {
 				$("#question1").css({display:"none"});
 				$("#question2").css({display:"block"});
-				question = (question + 1) * 1.0;
-			} else if (question == 2.0 && reg2.test(input)) {
+				$(".button1").css({display:"none"});
+				$(".button2").css({display:"block"});
+				$("#userAttempt").val('');
+			} 	else {
+					vscode.postMessage({
+						success: 'fail',
+						userAns: input
+					});
+				}
+		});
+		$(".button2").on("click", function(){
+			let input = $("#userAttempt").val();
+			if (input.includes("print(") && input.includes(")") && input.includes("+")) {
 				vscode.postMessage({
-				 	success: 'pass'
+				 success: 'pass'
 				});
 			} else {
 				vscode.postMessage({
@@ -350,7 +361,7 @@ function pythonPrintGame(){
 					userAns: input
 				});
 			}
-		});
+		});	
 	}())
 	</script>
 	</body>
@@ -359,11 +370,12 @@ function pythonPrintGame(){
 
 	panel.webview.onDidReceiveMessage(message => {
 		if(message.success === 'pass'){
-			vscode.window.showInformationMessage("Good Job You Figured it Out.");
-			choices.topic = "if"
-			redirect(choices, pa)
+			message.lang = 'python';
+			message.topic = 'if';
+			vscode.window.showInformationMessage("Good Job! You can now move on to the Next Stage.");
+			redirect(message, panel);
 		} else {
-			vscode.window.showInformationMessage(message.userAns);
+			//vscode.window.showInformationMessage(message.userAns);
 			vscode.window.showInformationMessage("Close, Try Again.");
 		}
 	});
