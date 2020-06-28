@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-const path = require('path');
+//const path = require('path');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -22,49 +22,91 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('languagehelper.start',
 		() => {
 
-        const supportedLanguages = ['Python', 'C', 'JavaScript'];
-
         const panel = vscode.window.createWebviewPanel(
             'lngHelper',
             'Language Helper',
 			vscode.ViewColumn.One, 
-			{}
+			{
+				enableScripts: true
+			}
 		);
+	  
 
-		// Get path to resource on disk
-		const onDiskPath = vscode.Uri.file(
-			path.join(context.extensionPath, 'index.html')
-		);
+		panel.webview.html = `<!DOCTYPE html> 
+		<html>
+			<head>
+				<title>LanguageHelper</title>
+				<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+			<style>
+				div {
+					background-color: lightblue;
+					padding: 10px;
+					border-radius: 5px;
+					margin-top: 10px;
+					color: black;
+					width: 10vw;
+					text-align: center;
+					transition: opacity .2s;
+				}
 
-		// And get the special URI to use with the webview
-		const welcomeSrc = panel.webview.asWebviewUri(onDiskPath);
+				div:hover {
+					opacity: 0.8;
+					cursor: pointer;
+				}
+			</style>
+			</head>
+			<body>
+				<h1>Welcome!</h1>
+				<h2>Select a language</h2>
+					
+				<div id="python">Python</div>
+				<div id="java">Java</div>
+				<div id="javascript">JavaScript</div>
+				<div id="c">C</div>
+
+				<script>
+					(function() {
+						const vscode = acquireVsCodeApi();
+						//vscode.postMessage({command: 'test',text: 'test'});
+						$("div").on("click", function() {
+							let choice = this.id;
+							vscode.postMessage({
+								text: choice
+							});
+						});
+					}())
+				</script>
+			</body>
+		</html>`;
 		
-		// Set panel's html to local file
-		panel.webview.html = getWebviewContent(welcomeSrc);
+		panel.webview.onDidReceiveMessage(message => {
+			console.log(message.text);
+			vscode.window.showInformationMessage("You chose " + message.text);
+			redirect(message.text);
+		});
 		
-		//selecting a language
-		selectLanguage(supportedLanguages);
+		function redirect(lang) {
+			switch(lang) {
+				case 'python':
+					
+					break;
+				case 'java':
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('LanguageHelper');
-    });
-
+					break;
+				case 'javascript':
+					
+					break;
+				case 'c':
+					
+					break;
+				default:
+					vscode.window.showErrorMessage("Something went wrong!");
+					break;
+			}
+		}
+	});
+	
     context.subscriptions.push(disposable);
-}
-
-function selectLanguage(supportedLanguages) {
-	//populate dropdown
-	for (let i = 0; i < supportedLanguages.length; i++) {
-		let dropdown = document.getElementById('languages');
-		dropdown.createElement('option');
-		option.text = supportedLanguages[i];
-		dropdown.add(option);
-	}
-
-	//redirect to challenge
-	// document.getElementById('go').addEventListener('click', () => {
-
-	// });
 }
 
 exports.activate = activate;
