@@ -3,6 +3,7 @@
 	"displayName": "LanguageHelper",
 	"description": "",
 	"version": "0.0.1",
+	"publisher": "LH",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
@@ -36,5 +37,10 @@
 		"mocha": "^7.1.2",
 		"typescript": "^3.8.3",
 		"vscode-test": "^1.3.0"
-	}
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/eames-palmer/LanguageHelper"
+	  },
+	  "homepage": "https://github.com/eames-palmer/LanguageHelper/blob/master/README.md"
 }
