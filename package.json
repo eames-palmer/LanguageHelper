@@ -1,9 +1,9 @@
 {
 	"name": "languagehelper",
-	"displayName": "LanguageHelper",
-	"description": "",
+	"displayName": "Language Helper",
+	"description": "Gamifying the learning experience.",
 	"version": "0.0.1",
-	"publisher": "LH",
+	"publisher": "LHDev",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
